@@ -1,5 +1,5 @@
 import { Kysely, sql } from 'kysely'
-import { Database } from '../lib/db' // Asegúrate de que el tipo Database esté correctamente definido
+import { Database } from '../lib/db'
 
 export async function up(db: Kysely<Database>): Promise<void> {
   const result = await db

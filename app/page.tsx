@@ -1,32 +1,20 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
+import Home from "@/components/home";
 
-import LoadingSpinner from '@/components/ui/loadingSpinner';
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-export default function Home() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
-  }, [status, router]);
-
-  if (status === 'loading') {
-    return <LoadingSpinner />;
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    redirect('/login');
   }
 
-  if (session) {
-    return (
-      <>
-        <p>Bienvenido, {session.user?.name}!</p>
-        <button onClick={() => signOut()}>Cerrar sesión</button>
-      </>
-    );
-  }
+  console.log('Session active:', session);
 
-  return <p>Redirigiendo al inicio de sesión...</p>;
-}
+  return (
+    <main className="min-h-screen">
+      <Home />
+    </main>
+  );
+} 

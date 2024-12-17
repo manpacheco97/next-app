@@ -76,3 +76,7 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.logo-white svg {
+  filter: invert(1);
+}

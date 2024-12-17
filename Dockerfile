@@ -1,7 +1,8 @@
 FROM node:18-alpine
 
-RUN apk add --no-cache bash netcat-openbsd
 WORKDIR /app
+
+RUN apk add --no-cache bash netcat-openbsd
 
 COPY package*.json ./
 

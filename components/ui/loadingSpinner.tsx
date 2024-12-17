@@ -11,7 +11,7 @@ const LoadingSpinner: React.FC = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-background">
       <div className="mb-6">
         <Image
-          src="/images/logo.png"
+          src="/images/logo.svg"
           alt="Logo de la App"
           width={100}
           height={100}
