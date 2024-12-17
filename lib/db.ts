@@ -1,28 +1,15 @@
-import pkg from 'pg'
-const { Pool } = pkg
+import { Kysely, PostgresDialect } from 'kysely';
+import type { DB } from '@/types/db';
+import pg from 'pg';
 
-import { Kysely, PostgresDialect, Generated } from 'kysely'
+const { Pool } = pg;
 
-export interface Database {
-  users: UsersTable
-  migrations: MigrationsTable
-}
+const dialect = new PostgresDialect({
+  pool: new Pool({
+    connectionString: process.env.DATABASE_URL,
+  })
+});
 
-interface UsersTable {
-  id: Generated<number>
-  name: string | null
-  email: string
-  password: string
-}
-
-interface MigrationsTable {
-  name: string
-}
-
-export const db = new Kysely<Database>({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      connectionString: process.env.DATABASE_URL,
-    }),
-  }),
-})
+export const db = new Kysely<DB>({
+  dialect,
+});

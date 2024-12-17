@@ -1,18 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 
-export default function Login() {
+export default function Register() {
   const [formData, setFormData] = useState({
     email: '',
+    name: '',
     password: '',
   });
   const router = useRouter();
@@ -26,35 +26,39 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const res = await signIn('credentials', {
-      redirect: false,
-      email: formData.email,
-      password: formData.password,
+  
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
     });
-
-    if (res?.ok) {
-      router.push('/');
+  
+    if (res.ok) {
+      router.push('/login?registered=true');
     } else {
-      alert('Credenciales incorrectas');
+      const data = await res.json();
+      alert(data.message);
     }
   };
+  
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-md shadow">
-        <div className="flex justify-center">
-          <Image
-            src="/images/logo.png"
-            alt="Logo de la App"
-            width={100}
-            height={100}
-            className="object-contain"
-          />
-        </div>
-
-        <h2 className="text-2xl font-bold text-center">Iniciar sesión</h2>
+        <h2 className="text-2xl font-bold text-center">Crear una cuenta</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <Label htmlFor="name">Nombre</Label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
           <div>
             <Label htmlFor="email">Correo electrónico</Label>
             <Input
@@ -80,7 +84,7 @@ export default function Login() {
             />
           </div>
           <Button type="submit" className="w-full">
-            Iniciar sesión
+            Registrarse
           </Button>
         </form>
         <div className="flex items-center my-4">
@@ -97,12 +101,12 @@ export default function Login() {
           onClick={() => signIn('google')}
           className="w-full"
         >
-          Iniciar sesión con Google
+          Registrarse con Google
         </Button>
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          ¿No tienes una cuenta?{' '}
-          <a href="/register" className="text-primary hover:underline">
-            Regístrate
+          ¿Ya tienes una cuenta?{' '}
+          <a href="/login" className="text-primary hover:underline">
+            Inicia sesión
           </a>
         </p>
       </div>

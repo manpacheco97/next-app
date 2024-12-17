@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }: { user: User; account: Account | null }) {
       if (account?.provider === 'google') {
-        // Verificar si existe
+        // Verificar si el usuario ya existe
         const existingUser = await db
           .selectFrom('users')
           .selectAll()
@@ -58,13 +58,13 @@ export const authOptions: NextAuthOptions = {
           .executeTakeFirst();
 
         if (!existingUser) {
-          // Crear nuevo usuario
+          // Crear un nuevo usuario si no existe
           await db
             .insertInto('users')
             .values({
               name: user.name,
               email: user.email!,
-              password: '',
+              password: '', // No se almacena contraseña para usuarios de Google
             })
             .execute();
         }
@@ -87,7 +87,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: true, // Opcional: Habilita el modo de depuración para NextAuth
+  debug: true, // Habilita el modo de depuración para NextAuth
   session: {
     strategy: 'jwt',
   },

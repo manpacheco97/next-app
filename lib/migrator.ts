@@ -1,3 +1,5 @@
+// lib/migrator.ts
+
 import { Umzug } from 'umzug'
 import { db } from './db'
 import { dirname } from 'path'
@@ -31,11 +33,19 @@ export const migrator = new Umzug({
   context: db,
   storage: {
     async executed({ context }) {
-      const results = await context
-        .selectFrom('migrations')
-        .select('name')
-        .execute()
-      return results.map((result) => result.name)
+      try {
+        const results = await context
+          .selectFrom('migrations')
+          .select('name')
+          .execute()
+        return results.map((result) => result.name)
+      } catch (error: any) {
+        if (error.code === '42P01') { // Código de error para "relation does not exist" en Postgres
+          // La tabla 'migrations' no existe, retornar un array vacío
+          return []
+        }
+        throw error
+      }
     },
     async logMigration({ name, context }) {
       await context.insertInto('migrations').values({ name }).execute()
