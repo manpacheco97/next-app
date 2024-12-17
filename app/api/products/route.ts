@@ -3,9 +3,7 @@ import { uploadToS3 } from '@/lib/s3';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
-import formidable from 'formidable';
 import { v4 as uuidv4 } from 'uuid';
-import { IncomingMessage } from 'http';
 
 export async function GET() {
   try {
@@ -30,12 +28,13 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
-    const price = formData.get('price') as string;
+    const price = parseFloat(formData.get('price') as string);
+    const category_id = parseInt(formData.get('category_id') as string);
     const image = formData.get('image') as File;
 
-    if (!name || !price) {
+    if (!name || isNaN(price) || !category_id) {
       return NextResponse.json(
-        { message: 'Nombre y precio son requeridos' },
+        { message: 'Nombre, precio y categoría son requeridos' },
         { status: 400 }
       );
     }
@@ -65,9 +64,10 @@ export async function POST(request: NextRequest) {
     const [product] = await db
       .insertInto('products')
       .values({
-        name: name,
-        description: description,
-        price: parseFloat(price),
+        name,
+        description,
+        price,
+        category_id,
         image_url: imageUrl,
       })
       .returning('id')

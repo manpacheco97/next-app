@@ -3,6 +3,7 @@ import { Generated } from 'kysely';
 export interface DB {
   users: UsersTable;
   products: ProductsTable;
+  categories: CategoriesTable;
   migrations: MigrationsTable;
 }
 
@@ -19,8 +20,17 @@ export interface ProductsTable {
   description: string | null;
   price: number;
   image_url: string | null;
+  category_id: number | null;
   created_at: Generated<Date>;
-  updated_at: Generated<Date>; 
+  updated_at: Generated<Date>;
+}
+
+export interface CategoriesTable {
+  id: Generated<number>;
+  name: string;
+  description: string | null;
+  created_at: Generated<Date>;
+  updated_at: Generated<Date>;
 }
 
 export interface MigrationsTable {

@@ -22,7 +22,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     axios
       .get(`/api/products/${params.id}`)
       .then((response) => {
-        setProduct(response.data);
+        const productData = {
+          ...response.data,
+          price: parseFloat(response.data.price)
+        };
+        setProduct(productData);
       })
       .catch((error) => {
         console.error('Error fetching product:', error);

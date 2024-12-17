@@ -1,19 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useAlert } from '@/context/alertContext';
+
+interface Category {
+  id: number;
+  name: string;
+}
 
 export default function NewProductPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { showAlert } = useAlert();
 
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetch('/api/categories')
+      .then(res => res.json())
+      .then(data => setCategories(data))
+      .catch(error => console.error('Error fetching categories:', error));
+  }, []);
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
+    category_id: '',
     image: null as File | null,
   });
 
@@ -25,7 +40,9 @@ export default function NewProductPage() {
     router.push('/login');
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -62,6 +79,7 @@ export default function NewProductPage() {
       submitData.append('name', formData.name);
       submitData.append('description', formData.description);
       submitData.append('price', formData.price);
+      submitData.append('category_id', formData.category_id);
       if (formData.image) {
         submitData.append('image', formData.image);
       }
@@ -134,6 +152,26 @@ export default function NewProductPage() {
                 onChange={handleChange}
                 className="mt-1 block w-full border rounded-md p-2"
               />
+            </div>
+            <div>
+              <label htmlFor="category_id" className="block font-medium text-gray-700">
+                Categoría
+              </label>
+              <select
+                name="category_id"
+                id="category_id"
+                required
+                value={formData.category_id}
+                onChange={handleChange}
+                className="mt-1 block w-full border rounded-md p-2"
+              >
+                <option value="">Selecciona una categoría</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label htmlFor="image" className="block font-medium text-gray-700">

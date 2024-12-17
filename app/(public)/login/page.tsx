@@ -58,7 +58,7 @@ export default function Login() {
     });
 
     if (res?.ok) {
-      router.push('/');
+      router.push('/products');
     } else {
       const errorMessage = res?.error || 'Credenciales incorrectas';
       setError(errorMessage);
@@ -121,7 +121,7 @@ export default function Login() {
         </div>
         <Button
           variant="outline"
-          onClick={() => signIn('google', { callbackUrl: '/' })}
+          onClick={() => signIn('google', { callbackUrl: '/products' })}
           className="w-full flex items-center justify-center transition-colors duration-300 hover:bg-gray-100"
         >
           <Image
